@@ -1,0 +1,36 @@
+# Byte-compiled / optimized Python files
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment (if using venv)
+venv/
+env/
+
+# MacOS metadata files
+.DS_Store
+
+# Logs and database files
+*.log
+*.sqlite3
+*.db
+*.db-journal
+
+# Environment variables (important for security)
+.env
+*.key
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+
+# Ignore instance folder except database
+instance/*
+!instance/*.db  # Allow SQLite database to be tracked
+
+# Ignore cache files inside static and templates
+static/*.cache
+templates/*.cache
+
+# Custom files that shouldn’t be committed
+relationalData.txt
