@@ -11,7 +11,12 @@ from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 # Import your forms from the forms.py
 from forms import CreatePostForm,RegisterForm,LoginForm,CommentForm
+import smtplib
+import os
 
+
+my_email=os.getenv("MY_EMAIL")
+password=os.getenv("PASSWORD")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -105,13 +110,6 @@ class Comment(db.Model):
 
 with app.app_context():
     db.create_all()
-    # new_user=User(
-    #     name="Prashant Kumar",
-    #     email="pkritwan1020@gmail.com",
-    #     password=generate_password_hash(password="12345",method="pbkdf2:sha256",salt_length=8)
-    # )
-    # db.session.add(new_user)
-    # db.session.commit()
 
 
 gravtar=Gravatar(
@@ -296,10 +294,25 @@ def about():
     return render_template("about.html",logged_in=current_user.is_authenticated)
 
 
-@app.route("/contact")
+@app.route("/contact",methods=['POST','GET'])
 def contact():
+    if request.method=='POST':
+        user_name = request.form.get("name", "No Name Provided")
+        user_email = request.form.get("email", "No Email Provided")
+        user_phone_no = request.form.get("phone", "No Phone Number Provided")
+        message = request.form.get("message", "No Message Provided")
+        send_email(user_name,user_email,user_phone_no,message)
+        return render_template("contact.html",msg_sent=True,logged_in=current_user.is_authenticated)
     return render_template("contact.html",logged_in=current_user.is_authenticated)
 
+
+def send_email(name,email,phone,message):
+    email_message=f"Subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage {message}"
+    with smtplib.SMTP("smtp.gmail.com",587) as connection:
+        connection.starttls()
+        connection.login(my_email,password)
+        connection.sendmail(my_email,my_email,email_message)
+        connection.close()
 
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
